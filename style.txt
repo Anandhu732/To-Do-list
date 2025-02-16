@@ -1,0 +1,90 @@
+/* Global Styles */
+body {
+    background-color: #E8F5E9; /* Light green background */
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #FFFFFF; /* White background */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar {
+    flex: 1;
+    background-color: #FFFFFF; /* White background */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sidebar h2 {
+    font-size: 24px;
+    color: #6C63FF;
+  }
+  
+  .menu-item {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333333;
+  }
+  
+  .main-content {
+    flex: 3;
+    padding: 20px;
+  }
+  
+  .sticky-wall {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
+  /* Add Note Option */
+  .add-note {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px dashed #BDBDBD;
+    border-radius: 8px;
+    height: 150px;
+    background-color: #FFFFFF; /* White background */
+    color: #BDBDBD;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .add-note:hover {
+    background-color: #F5F5F5;
+    color: #6C63FF;
+  }
+  
+  /* Sticky Note Styles */
+  .sticky-note {
+    background-color: #FFF9C4; /* Soft yellow */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .sticky-note h3 {
+    margin-top: 0;
+    color: #856404;
+  }
+  
+  .sticky-note p {
+    margin: 0;
+    color: #333333;
+  }

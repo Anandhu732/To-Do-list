@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo</title>
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #E8F5E9;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .menu {
+            background-color: #FFFFFF;
+            width: 280px;
+            padding: 25px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            z-index: 1000;
+        }
+
+        .menu.open {
+            transform: translateX(0);
+        }
+
+        body.dark-mode .menu {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .tasks li {
+            list-style: none;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .tasks .active {
+            background-color: #E8F5E9;
+            border-left: 4px solid #4CAF50;
+            font-weight: bold;
+        }
+
+        /* Tags */
+        .tags {
+            margin-top: 20px;
+        }
+
+        .tag {
+            background-color: #B2EBF2;
+            color: #00796B;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin: 4px;
+        }
+
+        /* Sticky Notes Grid */
+        .sticky-wall {
+            flex: 1;
+            padding: 30px;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .menu.open + .sticky-wall {
+            margin-left: 280px;
+        }
+
+        .sticky-notes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .note {
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 200px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: grab;
+            transition: transform 0.3s, opacity 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .note.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .note.placeholder {
+            background-color: #f0f0f0;
+            border: 2px dashed #ccc;
+            opacity: 0.5;
+        }
+
+        .note.deleting {
+            animation: fadeOut 0.3s ease;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
+        }
+
+        .yellow { background-color: #FFF9C4; }
+        .blue { background-color: #80DEEA; }
+        .pink { background-color: #FFAB91; }
+        .orange { background-color: #FFCC80; }
+
+        /* Add Note Button */
+        .add-note {
+            background-color: #FFFFFF;
+            border: 2px dashed #BDBDBD;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #757575;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-note:hover {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+
+        /* Delete Button */
+        .delete-note {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #ff4b4b;
+        }
+
+        /* Dark Mode Toggle */
+        #dark-mode-toggle {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #6C63FF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Sidebar Toggle Button */
+        #sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: #6C63FF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                width: 250px;
+            }
+            .sticky-wall {
+                margin-left: 0;
+            }
+            .menu.open + .sticky-wall {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle Button -->
+    <button id="sidebar-toggle">☰</button>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <nav class="menu" aria-label="Sidebar">
+            <div class="search">
+                <input type="text" placeholder="Search" style="width: 100%; padding: 10px; margin-bottom: 20px;">
+            </div>
+            <ul class="tasks" role="menu">
+                <li role="menuitem" data-view="upcoming">Upcoming (0)</li>
+                <li role="menuitem" data-view="today">Today (0)</li>
+                <li role="menuitem" data-view="calendar">Calendar</li>
+                <li class="active" role="menuitem" data-view="sticky-wall">Sticky Wall</li>
+            </ul>
+            
+            <div class="tags">
+                <h3>Tags</h3>
+                <div id="tags-container"></div>
+                <button id="add-tag-btn" style="margin-top: 10px;">+ Add Tag</button>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button id="dark-mode-toggle">Toggle Dark Mode</button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="sticky-wall" aria-label="Sticky Wall">
+            <h1>Todo</h1>
+            <div class="filters">
+                <button onclick="filterNotes('all')">All</button>
+                <button onclick="filterNotes('work')">Work</button>
+                <button onclick="filterNotes('personal')">Personal</button>
+                <button onclick="filterNotes('shopping')">Shopping</button>
+            </div>
+            <div class="sticky-notes">
+                <!-- Add Note Button -->
+                <div class="note add-note" onclick="addNewNote()" role="button" aria-label="Add New Note">+</div>
+            </div>
+
+            <!-- Calendar -->
+            <div id="calendar"></div>
+        </main>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script>
+        // Sidebar Toggle Functionality
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const menu = document.querySelector('.menu');
+        const stickyWall = document.querySelector('.sticky-wall');
+
+        sidebarToggle.addEventListener('click', () => {
+            menu.classList.toggle('open');
+        });
+
+        // Add Event Listeners to Menu Items
+        const menuItems = document.querySelectorAll('.tasks li');
+        menuItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all items
+                menuItems.forEach(i => i.classList.remove('active'));
+                // Add active class to the clicked item
+                item.classList.add('active');
+                // Update the main content based on the selected view
+                updateContentView(item.getAttribute('data-view'));
+            });
+        });
+
+        // Update Content View
+        function updateContentView(view) {
+            const stickyNotes = document.querySelector('.sticky-notes');
+            const calendar = document.getElementById('calendar');
+
+            if (view === 'sticky-wall') {
+                stickyNotes.style.display = 'grid';
+                calendar.style.display = 'none';
+            } else if (view === 'calendar') {
+                stickyNotes.style.display = 'none';
+                calendar.style.display = 'block';
+            } else {
+                stickyNotes.style.display = 'grid';
+                calendar.style.display = 'none';
+                // Additional logic for 'upcoming' and 'today' views can be added here
+            }
+        }
+
+        // Add New Note Functionality
+        function addNewNote() {
+            const colors = ['yellow', 'blue', 'pink', 'orange'];
+            const category = document.getElementById('note-category')?.value || 'work';
+            const date = prompt('Enter a date (YYYY-MM-DD) for this task:');
+            const newNote = document.createElement('div');
+            newNote.className = `note ${colors[Math.floor(Math.random() * colors.length)]}`;
+            newNote.contentEditable = true;
+            newNote.setAttribute('role', 'textbox');
+            newNote.setAttribute('data-category', category);
+            newNote.setAttribute('data-date', date || '');
+            newNote.innerHTML = `
+                <button class="delete-note" onclick="deleteNote(this)">×</button>
+                <h3>New Note (${category})</h3>
+                <p>Start typing...</p>
+            `;
+            
+            const notesContainer = document.querySelector('.sticky-notes');
+            notesContainer.insertBefore(newNote, notesContainer.lastElementChild);
+
+            if (date) {
+                const calendar = FullCalendar.Calendar.getInstance(document.getElementById('calendar'));
+                calendar.addEvent({
+                    title: 'New Task',
+                    start: date
+                });
+                saveCalendarEvents(calendar);
+            }
+
+            makeNoteDraggable(newNote);
+            saveNotes();
+        }
+
+        // Drag-and-Drop Functionality
+        let draggedItem = null;
+
+        function makeNoteDraggable(note) {
+            note.addEventListener('dragstart', handleDragStart);
+            note.addEventListener('dragover', handleDragOver);
+            note.addEventListener('drop', handleDrop);
+            note.addEventListener('dragend', handleDragEnd);
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', '');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            const target = e.target.closest('.note');
+            if (target && target !== draggedItem) {
+                target.classList.add('placeholder');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            document.querySelectorAll('.note').forEach(note => note.classList.remove('placeholder'));
+            const target = e.target.closest('.note');
+            if (target && target !== draggedItem) {
+                const rect = target.getBoundingClientRect();
+                const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+                const notes = [...document.querySelectorAll('.note')];
+                const draggedIndex = notes.indexOf(draggedItem);
+                const targetIndex = notes.indexOf(target);
+
+                if (draggedIndex < targetIndex && !next) {
+                    target.parentNode.insertBefore(draggedItem, target);
+                } else if (draggedIndex > targetIndex && next) {
+                    target.parentNode.insertBefore(draggedItem, target.nextSibling);
+                }
+            }
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            saveNotes();
+        }
+
+        // Delete Note Functionality
+        function deleteNote(button) {
+            const note = button.parentElement;
+            note.classList.add('deleting');
+            setTimeout(() => {
+                note.remove();
+                saveNotes();
+            }, 300);
+        }
+
+        // Add Tag Functionality
+        const tagsContainer = document.getElementById('tags-container');
+        const addTagBtn = document.getElementById('add-tag-btn');
+
+        addTagBtn.addEventListener('click', () => {
+            const tagName = prompt('Enter a new tag:');
+            if (tagName) {
+                const newTag = document.createElement('div');
+                newTag.className = 'tag';
+                newTag.textContent = tagName;
+                tagsContainer.appendChild(newTag);
+                saveTags();
+            }
+        });
+
+        // Save Notes and Tags to Local Storage
+        function saveNotes() {
+            const notes = [];
+            document.querySelectorAll('.note:not(.add-note)').forEach(note => {
+                notes.push({
+                    content: note.innerHTML,
+                    color: note.className.split(' ')[1],
+                    category: note.getAttribute('data-category'),
+                    date: note.getAttribute('data-date')
+                });
+            });
+            localStorage.setItem('notes', JSON.stringify(notes));
+        }
+
+        function saveTags() {
+            const tags = [];
+            document.querySelectorAll('.tag').forEach(tag => {
+                tags.push(tag.textContent);
+            });
+            localStorage.setItem('tags', JSON.stringify(tags));
+        }
+
+        // Load Notes and Tags from Local Storage
+        function loadNotes() {
+            const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            savedNotes.forEach(note => {
+                const newNote = document.createElement('div');
+                newNote.className = `note ${note.color}`;
+                newNote.contentEditable = true;
+                newNote.setAttribute('role', 'textbox');
+                newNote.setAttribute('data-category', note.category);
+                newNote.setAttribute('data-date', note.date || '');
+                newNote.innerHTML = note.content;
+                notesContainer.insertBefore(newNote, notesContainer.lastElementChild);
+                makeNoteDraggable(newNote);
+            });
+        }
+
+        function loadTags() {
+            const savedTags = JSON.parse(localStorage.getItem('tags')) || [];
+            savedTags.forEach(tag => {
+                const newTag = document.createElement('div');
+                newTag.className = 'tag';
+                newTag.textContent = tag;
+                tagsContainer.appendChild(newTag);
+            });
+        }
+
+        // Load data on page load
+        window.addEventListener('load', () => {
+            loadNotes();
+            loadTags();
+        });
+
+        // Filter Notes by Category
+        function filterNotes(category) {
+            const notes = document.querySelectorAll('.note:not(.add-note)');
+            notes.forEach(note => {
+                if (category === 'all' || note.getAttribute('data-category') === category) {
+                    note.style.display = 'block';
+                } else {
+                    note.style.display = 'none';
+                }
+            });
+        }
+
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Initialize Calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: loadCalendarEvents(),
+                dateClick: function(info) {
+                    const taskName = prompt('Enter a task for ' + info.dateStr);
+                    if (taskName) {
+                        const event = {
+                            title: taskName,
+                            start: info.dateStr,
+                            description: prompt('Enter a description (optional):') || ''
+                        };
+                        calendar.addEvent(event);
+                        saveCalendarEvents(calendar);
+                    }
+                },
+                eventClick: function(info) {
+                    const action = prompt('Edit (E) or Delete (D) this event?').toLowerCase();
+                    if (action === 'e') {
+                        const newTitle = prompt('Edit task name:', info.event.title);
+                        const newDescription = prompt('Edit description:', info.event.extendedProps.description);
+                        if (newTitle) {
+                            info.event.setProp('title', newTitle);
+                            info.event.setExtendedProp('description', newDescription);
+                            saveCalendarEvents(calendar);
+                        }
+                    } else if (action === 'd') {
+                        if (confirm('Delete this event?')) {
+                            info.event.remove();
+                            saveCalendarEvents(calendar);
+                        }
+                    }
+                },
+                eventContent: function(info) {
+                    const description = info.event.extendedProps.description;
+                    return {
+                        html: `<div>
+                            <strong>${info.event.title}</strong>
+                            ${description ? `<br><small>${description}</small>` : ''}
+                        </div>`
+                    };
+                }
+            });
+
+            calendar.render();
+        });
+
+        // Save Calendar Events to Local Storage
+        function saveCalendarEvents(calendar) {
+            const events = calendar.getEvents().map(event => ({
+                title: event.title,
+                start: event.start.toISOString(),
+                description: event.extendedProps.description
+            }));
+            localStorage.setItem('calendarEvents', JSON.stringify(events));
+        }
+
+        // Load Calendar Events from Local Storage
+        function loadCalendarEvents() {
+            return JSON.parse(localStorage.getItem('calendarEvents')) || [];
+        }
+    </script>
+</body>
+</html>
