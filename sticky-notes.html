@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Notes</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Sticky Notes Section -->
+    <section class="sticky-notes">
+      <h2>Sticky Notes</h2>
+      <div class="notes-container">
+        <!-- Add New Note Card -->
+        <div class="note-card add-note-card">
+          <textarea placeholder="Write your note here..."></textarea>
+          <button class="save-note-btn"><i class="fas fa-plus"></i> Add Note</button>
+        </div>
+        <!-- Saved Notes Will Appear Here -->
+        <div id="savedNotes"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
