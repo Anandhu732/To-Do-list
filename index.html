@@ -1,93 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Todoo.com</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todoii - Enhanced</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 </head>
-<body>
-  <div class="container">
-    <!-- Sidebar Menu -->
-    <aside class="sidebar">
-      <div class="logo">Todo App</div>
-      <nav>
-        <ul>
-          <li><a href="index.html" class="active"><i class="fas fa-home"></i> Home</a></li>
-          <li><a href="#"><i class="fas fa-calendar-alt"></i> Calendar</a></li>
-          <li><a href="sticky-notes.html"><i class="fas fa-sticky-note"></i> Sticky Notes</a></li>
-          <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Header -->
-      <header class="header">
-        <h1>My Todo List</h1>
-        <div class="header-right">
-          <div class="search-bar">
-            <input type="text" placeholder="Search tasks..." id="searchInput" />
-            <button><i class="fas fa-search"></i></button>
-          </div>
-          <div class="profile-dropdown">
-            <img src="https://via.placeholder.com/40" alt="Profile" />
-            <div class="dropdown-content">
-              <a href="#">Accounts</a>
-              <a href="#">Settings</a>
-              <a href="#">Logout</a> 
-            </div>
-          </div>
+<body data-theme="dark">
+    <header class="bg-gray-900 bg-opacity-50 backdrop-blur-lg p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold">Todoii</h1>
+            <nav>
+                <ul class="flex space-x-6 text-lg">
+                    <li><a href="#" class="hover:text-blue-400">About</a></li>
+                    <li><a href="#" class="hover:text-blue-400">Contact</a></li>
+                    <li><a href="#" class="hover:text-blue-400">Profile</a></li>
+                    <li>
+                        <button id="theme-toggle" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-500">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
         </div>
-      </header>
-
-      <!-- Add Task Section -->
-      <section class="add-task">
-        <input type="text" placeholder="Add a new task..." id="taskInput" />
-        <button id="addTaskBtn"><i class="fas fa-plus"></i> Add Task</button>
-      </section>
-
-      <!-- Task List -->
-      <section class="task-list">
-        <ul id="taskList">
-          <!-- Tasks will be dynamically added here -->
-        </ul>
-      </section>
-
-      <!-- Calendar Section -->
-      <section class="calendar">
-        <h2>Calendar</h2>
-        <!-- Add Event Button -->
-        <button id="addEventBtn"><i class="fas fa-plus"></i> Add Event</button>
-        <!-- Calendar Container -->
-        <div id="calendar"></div>
-        <!-- Add Event Modal -->
-        <div id="eventModal" class="modal">
-          <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>Add Event</h3>
-            <form id="eventForm">
-              <label for="eventTitle">Title:</label>
-              <input type="text" id="eventTitle" required />
-              <label for="eventDate">Date:</label>
-              <input type="date" id="eventDate" required />
-              <label for="eventDescription">Description:</label>
-              <textarea id="eventDescription"></textarea>
-              <button type="submit">Save Event</button>
+    </header>
+    <div class="container mx-auto mt-8 flex flex-col lg:flex-row gap-6 p-4">
+        <aside class="w-full lg:w-1/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Menu</h2>
+            <ul class="space-y-3">
+                <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-home mr-2"></i>Home</a></li>
+                <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a></li>
+                <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-user mr-2"></i>Profile</a></li>
+                <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-cog mr-2"></i>Settings</a></li>
+                <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-red-600 flex items-center"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a></li>
+            </ul>
+        </aside>
+        <main class="w-full lg:w-2/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-bold mb-4">My To-Do List</h2>
+            <form id="todo-form" class="flex flex-wrap gap-2 mb-4">
+                <input type="text" id="todo-input" class="flex-1 p-3 bg-gray-800 text-white rounded-lg border-none" placeholder="Add a new task">
+                <select id="todo-category" class="p-3 bg-gray-800 text-white border-none rounded-lg">
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Shopping">Shopping</option>
+                </select>
+                <input type="date" id="todo-date" class="p-3 bg-gray-800 text-white border-none rounded-lg">
+                <select id="todo-priority" class="p-3 bg-gray-800 text-white border-none rounded-lg">
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <select id="todo-assignee" class="p-3 bg-gray-800 text-white border-none rounded-lg">
+                    <option value="Unassigned">Unassigned</option>
+                    <option value="User1">User1</option>
+                    <option value="User2">User2</option>
+                </select>
+                <select id="todo-template" class="p-3 bg-gray-800 text-white border-none rounded-lg">
+                    <option value="Custom">Custom</option>
+                    <option value="Meeting Notes">Meeting Notes</option>
+                    <option value="Project Plan">Project Plan</option>
+                    <option value="Weekly Status Report">Weekly Status Report</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"><i class="fas fa-plus"></i></button>
             </form>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- FullCalendar Library -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
-  <!-- Main JavaScript -->
-  <script src="script.js"></script>
+            <div class="dashboard mb-6">
+                <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold">Total Tasks</h3>
+                        <p id="total-tasks" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold">Completed Tasks</h3>
+                        <p id="completed-tasks" class="text-2xl font-bold">0</p>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold">Pending Tasks</h3>
+                        <p id="pending-tasks" class="text-2xl font-bold">0</p>
+                    </div>
+                </div>
+            </div>
+            <input type="text" id="search-input" class="w-full p-3 bg-gray-800 text-white rounded-lg border-none mb-4" placeholder="Search tasks...">
+            <ul id="todo-list" class="space-y-3"></ul>
+        </main>
+        <aside class="w-full lg:w-1/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Calendar</h2>
+            <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id&ctz=America%2FNew_York" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
+        </aside>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
