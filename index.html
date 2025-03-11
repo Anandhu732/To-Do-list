@@ -9,9 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body data-theme="dark">
-    <header class="bg-gray-900 bg-opacity-50 backdrop-blur-lg p-4 shadow-lg">
+    <header class="glass-effect sticky top-0 z-50 mb-8">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-bold">Todoii</h1>
             <nav>
@@ -19,17 +22,12 @@
                     <li><a href="#" class="hover:text-blue-400">About</a></li>
                     <li><a href="#" class="hover:text-blue-400">Contact</a></li>
                     <li><a href="#" class="hover:text-blue-400">Profile</a></li>
-                    <li>
-                        <button id="theme-toggle" class="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-500">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                    </li>
                 </ul>
             </nav>
         </div>
     </header>
     <div class="container mx-auto mt-8 flex flex-col lg:flex-row gap-6 p-4">
-        <aside class="w-full lg:w-1/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
+        <aside class="w-full lg:w-1/4 glass-effect p-6 rounded-2xl">
             <h2 class="text-2xl font-semibold mb-4">Menu</h2>
             <ul class="space-y-3">
                 <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-blue-600 flex items-center"><i class="fas fa-home mr-2"></i>Home</a></li>
@@ -39,9 +37,9 @@
                 <li><a href="#" class="block p-3 bg-gray-800 rounded-lg hover:bg-red-600 flex items-center"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a></li>
             </ul>
         </aside>
-        <main class="w-full lg:w-2/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
-            <h2 class="text-3xl font-bold mb-4">My To-Do List</h2>
-            <form id="todo-form" class="flex flex-wrap gap-2 mb-4">
+        <main class="w-full lg:w-2/4 glass-effect p-6 rounded-2xl">
+            <h2 class="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-indigo-400">My To-Do List</h2>
+            <form id="todo-form" class="flex flex-wrap gap-3 mb-6">
                 <input type="text" id="todo-input" class="flex-1 p-3 bg-gray-800 text-white rounded-lg border-none" placeholder="Add a new task">
                 <select id="todo-category" class="p-3 bg-gray-800 text-white border-none rounded-lg">
                     <option value="Work">Work</option>
@@ -65,29 +63,36 @@
                     <option value="Project Plan">Project Plan</option>
                     <option value="Weekly Status Report">Weekly Status Report</option>
                 </select>
-                <button type="submit" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"><i class="fas fa-plus"></i></button>
+                <button type="submit" class="button-primary text-white p-3 rounded-xl hover:bg-indigo-600">
+                    <i class="fas fa-plus"></i>
+                </button>
             </form>
-            <div class="dashboard mb-6">
-                <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold">Total Tasks</h3>
-                        <p id="total-tasks" class="text-2xl font-bold">0</p>
+            <div class="dashboard mb-8">
+                <h2 class="text-2xl font-bold mb-4 flex items-center">
+                    <i class="fas fa-chart-line mr-2"></i>Dashboard Overview
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="dashboard-card">
+                        <h3 class="text-lg font-semibold mb-2 text-blue-300">Total Tasks</h3>
+                        <p id="total-tasks" class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">0</p>
+                        <div class="mt-2 text-sm text-blue-200">All registered tasks</div>
                     </div>
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold">Completed Tasks</h3>
-                        <p id="completed-tasks" class="text-2xl font-bold">0</p>
+                    <div class="dashboard-card">
+                        <h3 class="text-lg font-semibold mb-2 text-green-300">Completed</h3>
+                        <p id="completed-tasks" class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-400">0</p>
+                        <div class="mt-2 text-sm text-green-200">Tasks finished</div>
                     </div>
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <h3 class="text-lg font-semibold">Pending Tasks</h3>
-                        <p id="pending-tasks" class="text-2xl font-bold">0</p>
+                    <div class="dashboard-card">
+                        <h3 class="text-lg font-semibold mb-2 text-yellow-300">Pending</h3>
+                        <p id="pending-tasks" class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-400">0</p>
+                        <div class="mt-2 text-sm text-yellow-200">Tasks remaining</div>
                     </div>
                 </div>
             </div>
             <input type="text" id="search-input" class="w-full p-3 bg-gray-800 text-white rounded-lg border-none mb-4" placeholder="Search tasks...">
             <ul id="todo-list" class="space-y-3"></ul>
         </main>
-        <aside class="w-full lg:w-1/4 bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg">
+        <aside class="w-full lg:w-1/4 glass-effect p-6 rounded-2xl">
             <h2 class="text-2xl font-semibold mb-4">Calendar</h2>
             <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id&ctz=America%2FNew_York" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>
         </aside>

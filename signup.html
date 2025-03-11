@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODOII - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #000000;
+            min-height: 100vh;
+        }
+        .signup-card {
+            background: rgba(79, 109, 147, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid #4f6d93;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .input-field {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #4f6d93 !important;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            box-shadow: 0 0 0 2px #4f6d93;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="signup-card rounded-2xl p-8 animate__animated animate__fadeIn">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-white mb-2">TODOII</h1>
+                <p class="text-gray-300">Create your account</p>
+            </div>
+
+            <form class="space-y-6" onsubmit="event.preventDefault(); validateSignup();">
+                <div>
+                    <input type="text" id="fullname" required
+                        class="input-field w-full px-4 py-3 rounded-lg"
+                        placeholder="Full Name">
+                </div>
+                <div>
+                    <input type="email" id="email" required
+                        class="input-field w-full px-4 py-3 rounded-lg"
+                        placeholder="Email Address">
+                </div>
+                <div>
+                    <input type="text" id="username" required
+                        class="input-field w-full px-4 py-3 rounded-lg"
+                        placeholder="Username">
+                </div>
+                <div>
+                    <input type="password" id="password" required
+                        class="input-field w-full px-4 py-3 rounded-lg"
+                        placeholder="Password">
+                </div>
+                <div>
+                    <input type="password" id="confirm-password" required
+                        class="input-field w-full px-4 py-3 rounded-lg"
+                        placeholder="Confirm Password">
+                </div>
+                <button id="signupBtn" type="submit"
+                    class="w-full py-3 bg-[#4f6d93] text-white rounded-lg hover:bg-opacity-90 transition-all duration-300">
+                    Sign Up
+                </button>
+                <p class="text-center text-gray-300">
+                    Already have an account? <a href="login.html" class="text-[#4f6d93] hover:underline">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function validateSignup() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const button = document.getElementById('signupBtn');
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            button.classList.add('animate-pulse');
+            
+            setTimeout(() => {
+                alert('Account created successfully!');
+                window.location.href = 'login.html';
+                button.classList.remove('animate-pulse');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

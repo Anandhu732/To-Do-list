@@ -37,15 +37,18 @@ function loadTasks() {
 function addTaskToDOM(text, completed = false, dueDate = '', category = '', priority = '', assignee = 'Unassigned', comments = []) {
     const todoList = document.getElementById('todo-list');
     const newTodo = document.createElement('li');
-    newTodo.className = `flex flex-col justify-between items-start bg-gray-800 p-3 rounded-lg shadow-md ${isOverdue(dueDate) ? 'border-l-4 border-red-500' : ''}`;
+    newTodo.className = `task-item card ${isOverdue(dueDate) ? 'border-red-500' : ''} mb-4 group hover:scale-[1.01] transition-all duration-200`;
     newTodo.innerHTML = `
-        <div class="flex items-center w-full">
-            <input type="checkbox" class="mr-3 checkbox" ${completed ? 'checked' : ''}> 
-            <span>${text}</span>
-            ${category ? `<span class="ml-4 text-sm text-blue-400 category">${category}</span>` : ''}
-            ${dueDate ? `<span class="ml-4 text-sm text-gray-400 due-date">${dueDate}</span>` : ''}
-            ${priority ? `<span class="ml-4 text-sm text-yellow-400 priority">${priority}</span>` : ''}
-            ${assignee ? `<span class="ml-4 text-sm text-green-400 assignee">Assigned to: ${assignee}</span>` : ''}
+        <div class="flex items-center w-full justify-between p-4">
+            <div class="flex items-center gap-4">
+                <input type="checkbox" class="checkbox transform hover:scale-110 transition-transform" ${completed ? 'checked' : ''}> 
+                <span class="font-medium ${completed ? 'line-through text-gray-400' : ''} transition-all duration-200">${text}</span>
+            </div>
+            <div class="flex items-center gap-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                ${category ? `<span class="px-3 py-1 rounded-full text-xs bg-blue-500/20 text-blue-400 border border-blue-500/20">${category}</span>` : ''}
+                ${priority ? `<span class="px-3 py-1 rounded-full text-xs ${getPriorityColor(priority)} border border-current">${priority}</span>` : ''}
+                ${dueDate ? `<span class="text-sm text-gray-400">${formatDate(dueDate)}</span>` : ''}
+            </div>
         </div>
         <div class="flex mt-2">
             <button class="text-yellow-500 hover:text-yellow-700 mr-2"><i class="fas fa-edit"></i></button>
@@ -81,6 +84,21 @@ function addTaskToDOM(text, completed = false, dueDate = '', category = '', prio
     });
 }
 
+function getPriorityColor(priority) {
+    switch(priority.toLowerCase()) {
+        case 'high': return 'bg-red-500/20 text-red-400';
+        case 'medium': return 'bg-yellow-500/20 text-yellow-400';
+        case 'low': return 'bg-green-500/20 text-green-400';
+        default: return 'bg-gray-500/20 text-gray-400';
+    }
+}
+
+function formatDate(date) {
+    return new Date(date).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+    });
+}
 
 function isOverdue(dueDate) {
     if (!dueDate) return false;
@@ -143,14 +161,12 @@ document.getElementById('todo-list').addEventListener('click', function(e) {
     }
 });
 
-
 document.getElementById('todo-list').addEventListener('change', function(e) {
     if (e.target.classList.contains('checkbox')) {
         saveTasks();
         updateDashboard();
     }
 });
-
 
 function updateDashboard() {
     const totalTasks = document.querySelectorAll('#todo-list li').length;
@@ -175,9 +191,11 @@ function showNotification(title, message) {
     }
 }
 
-document.getElementById('theme-toggle').addEventListener('click', function() {
-    document.body.classList.toggle('bg-white');
-    document.body.classList.toggle('text-gray-900');
-    document.body.classList.toggle('bg-gray-900');
-    document.body.classList.toggle('text-white');
-});
+// Remove the theme toggle event listener at the bottom of the file
+// Remove or comment out:
+// document.getElementById('theme-toggle').addEventListener('click', function() {
+//     document.body.classList.toggle('bg-white');
+//     document.body.classList.toggle('text-gray-900');
+//     document.body.classList.toggle('bg-gray-900');
+//     document.body.classList.toggle('text-white');
+// });
